@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import AuthForm from "../components/auth-form";
 import Login from "../components/login";
@@ -11,12 +12,41 @@ import {
 	TabsTrigger,
 } from "../components/ui/tabs";
 import { landingPoints, landingTitle } from "../data/data";
+import { useEffect, useState } from "react";
+import { roundBonusPercents } from "lib";
 
 export default function HomePage() {
+	const [daysLeft, setDaysLeft] = useState("");
+
+	useEffect(() => {
+		const nextRoundDate = Date.now() + 30000000;
+		const intervalId = setInterval(() => {
+			const now = Date.now();
+			const roundDates = Object.keys(roundBonusPercents).map(
+				(date) => new Date(date)
+			);
+			// const nextRoundDate = roundDates.find(date => date > now);
+
+			if (nextRoundDate) {
+				const distance = nextRoundDate - now;
+				const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+				const hours = Math.floor(
+					(distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+				);
+				const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+				setDaysLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+			}
+		}, 1000);
+
+		return () => clearInterval(intervalId); // Cleanup the interval on component unmount
+	}, []);
+
 	return (
 		<div className="flex flex-col items-center h-screen min-h-screen bg-slate-900">
 			<div className="top-0 w-full px-4 py-2 text-center bg-primary text-primary-foreground">
-				<span className="font-bold">3d 4h 2m 2s left</span> to get up to 95%
+				<span className="font-bold">{`${daysLeft} left`}</span> to get up to 95%
 				bonus shares
 			</div>
 			<div className="w-full pt-10 lg:grid lg:grid-cols-2 lg:min-h-screen lg:pt-0">
@@ -57,7 +87,7 @@ export default function HomePage() {
 								return (
 									<div className="flex items-start space-x-4" key={point.title}>
 										<svg
-											className="w-6 h-6  text-primary"
+											className="w-6 h-6 text-primary"
 											fill="none"
 											height="24"
 											stroke="currentColor"

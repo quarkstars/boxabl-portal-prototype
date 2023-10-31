@@ -241,25 +241,40 @@ export default function DashboardPage() {
 								<CardTitle>My Investments</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="flex items-center justify-between pt-4 pb-0">
-									<div className="flex items-center justify-center gap-2">
-										<span className="text-lg font-medium">1,000 Shares</span>
-										<Badge>Approved</Badge>
-									</div>
-									<span className="font-medium">$50,000 Invested</span>
-								</div>
-								<div className="flex items-center justify-between py-2 pb-4 text-sm text-gray-500 border-b">
-									<span className="block">1/1/2023 (ID 12345678)</span>
-									<span></span>
-								</div>
-								<div className="flex items-center justify-between pt-4 pb-0">
-									<span className="text-lg font-medium">1,000 Shares</span>
-									<span className="font-medium">$50,000 Invested</span>
-								</div>
-								<div className="flex items-center justify-between py-2 pb-4 text-sm text-gray-500 border-b">
-									<span className="block">1/1/2023 (ID 12345678)</span>
-									<span>Note</span>
-								</div>
+								{transactions &&
+									transactions?.map((transaction) => {
+										return (
+											<>
+												<div
+													className="flex items-center justify-between pt-4 pb-0"
+													key={transaction?.id}
+												>
+													<div className="flex items-center justify-center gap-2">
+														<span className="text-lg font-medium">{`${numberWithCommas(
+															transaction?.shares
+														)} Shares`}</span>
+														<Badge
+															className={
+																transaction?.status !== "Approved"
+																	? "bg-gray-200"
+																	: ""
+															}
+														>{`${transaction?.status}`}</Badge>
+													</div>
+													<span className="font-medium">{`$${numberWithCommas(
+														transaction?.dollarAmount
+													)} Invested`}</span>
+												</div>
+												<div className="flex items-center justify-between py-2 pb-4 text-sm text-gray-500 border-b">
+													<span className="block">{`${`${transaction?.date?.substring(
+														0,
+														10
+													)}`}} (ID ${transaction?.id}`}</span>
+													<span></span>
+												</div>
+											</>
+										);
+									})}
 							</CardContent>
 						</Card>
 					</div>
